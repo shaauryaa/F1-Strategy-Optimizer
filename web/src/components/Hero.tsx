@@ -10,6 +10,7 @@ interface Props {
   onCircuitChange: (slug: string) => void;
   result: OptimiseResponse | null;
   loading: boolean;
+  loadingPhase: "optimising" | "cold" | "";
   gpName: string;
   onConfigOpen: () => void;
 }
@@ -20,6 +21,7 @@ export default function Hero({
   onCircuitChange,
   result,
   loading,
+  loadingPhase,
   gpName,
   onConfigOpen,
 }: Props) {
@@ -201,10 +203,20 @@ export default function Hero({
           >
             Configure and optimise to see the strategy
           </p>
+        ) : loadingPhase === "cold" ? (
+          <div className="mb-10 flex flex-col items-center gap-3 text-center px-4">
+            <LoadingPulse />
+            <span
+              className="font-body text-sm tracking-wide cold-pulse"
+              style={{ color: "var(--accent2)", maxWidth: 340 }}
+            >
+              Waking up the server, this may take ~30 seconds on first load…
+            </span>
+          </div>
         ) : (
           <div className="mb-10 flex items-center gap-3" style={{ color: "var(--muted)" }}>
             <LoadingPulse />
-            <span className="font-body text-sm tracking-wide">Optimising</span>
+            <span className="font-body text-sm tracking-wide">Optimising strategy…</span>
           </div>
         )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Hero from "@/components/Hero";
 import ThePlan from "@/components/ThePlan";
 import WhatItBuysYou from "@/components/WhatItBuysYou";
@@ -14,6 +14,95 @@ import type {
   ModelCard,
   OptimiseResponse,
 } from "@/types/api";
+
+function SkeletonBlock({ h, w }: { h: number; w?: string }) {
+  return (
+    <div
+      className="skeleton-block"
+      style={{ height: h, width: w ?? "100%", marginBottom: 12 }}
+    />
+  );
+}
+
+function ResultsSkeleton({ phase }: { phase: "optimising" | "cold" | "" }) {
+  const isCold = phase === "cold";
+  return (
+    <div aria-live="polite" aria-busy="true" aria-label="Loading results">
+      {/* Strategy plan skeleton */}
+      <section
+        className="py-16 px-6 md:px-12 lg:px-20"
+        style={{ background: "var(--bg-raised)", borderTop: "1px solid var(--hairline)" }}
+      >
+        <div className="max-w-6xl mx-auto">
+          <SkeletonBlock h={13} w="70px" />
+          <SkeletonBlock h={44} w="55%" />
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-px" style={{ background: "var(--hairline)" }}>
+            {[0, 1, 2].map(i => (
+              <div key={i} className="p-8" style={{ background: "var(--bg-card)" }}>
+                <SkeletonBlock h={11} w="80px" />
+                <SkeletonBlock h={56} w="60%" />
+                <SkeletonBlock h={13} w="75%" />
+                <SkeletonBlock h={13} w="90%" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Ranked strategies skeleton */}
+      <section
+        className="py-16 px-6 md:px-12 lg:px-20"
+        style={{ background: "var(--bg)" }}
+      >
+        <div className="max-w-6xl mx-auto">
+          <SkeletonBlock h={13} w="90px" />
+          <SkeletonBlock h={44} w="50%" />
+          <div className="mt-10 flex flex-col gap-3">
+            {[1, 0.88, 0.76, 0.64, 0.52].map((op, i) => (
+              <div
+                key={i}
+                className="skeleton-block"
+                style={{ height: 64, opacity: op }}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Undercut check skeleton */}
+      <section
+        className="py-16 px-6 md:px-12 lg:px-20"
+        style={{ background: "var(--bg-raised)" }}
+      >
+        <div className="max-w-6xl mx-auto">
+          <SkeletonBlock h={13} w="110px" />
+          <SkeletonBlock h={44} w="45%" />
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[0, 1, 2].map(i => (
+              <div key={i} className="skeleton-block" style={{ height: 88 }} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Cold-start notice — only shown after 5 s */}
+      {isCold && (
+        <div
+          className="py-6 px-6 flex justify-center"
+          style={{ background: "var(--bg)" }}
+        >
+          <p
+            className="font-body text-sm text-center cold-pulse"
+            style={{ color: "var(--muted)", maxWidth: 400 }}
+          >
+            Still working — Render&apos;s free tier needs ~30 s to wake up on first load.
+            Results will appear automatically.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface Config {
   laps: number;
@@ -39,8 +128,9 @@ export default function Page() {
   });
   const [result, setResult] = useState<OptimiseResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [loadingMsg, setLoadingMsg] = useState("Optimising");
+  const [loadingPhase, setLoadingPhase] = useState<"optimising" | "cold" | "">("");
   const [error, setError] = useState<string | null>(null);
+  const phaseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Load circuits, model card, and geo data on mount
@@ -71,26 +161,27 @@ export default function Page() {
 
   const runOptimise = useCallback(async () => {
     setLoading(true);
-    setLoadingMsg("Optimising");
+    setLoadingPhase("optimising");
     setError(null);
+    // After 5 s with no response, switch to cold-start message
+    phaseTimer.current = setTimeout(() => setLoadingPhase("cold"), 5000);
     try {
-      const res = await postOptimise(
-        {
-          circuit: selectedSlug,
-          year: FIXED_YEAR,
-          laps: config.laps,
-          temp: config.temp,
-          start_compound: null,
-          max_stops: config.maxStops,
-          sc_lap: config.scLap,
-          vsc_lap: config.vscLap,
-        },
-        () => setLoadingMsg("Waking the engine — up to a minute on the free tier"),
-      );
+      const res = await postOptimise({
+        circuit: selectedSlug,
+        year: FIXED_YEAR,
+        laps: config.laps,
+        temp: config.temp,
+        start_compound: null,
+        max_stops: config.maxStops,
+        sc_lap: config.scLap,
+        vsc_lap: config.vscLap,
+      });
       setResult(res);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Optimisation failed");
     } finally {
+      if (phaseTimer.current) clearTimeout(phaseTimer.current);
+      setLoadingPhase("");
       setLoading(false);
     }
   }, [selectedSlug, config]);
@@ -142,17 +233,18 @@ export default function Page() {
         onCircuitChange={handleCircuitChange}
         result={result}
         loading={loading}
+        loadingPhase={loadingPhase}
         gpName={gpName}
         onConfigOpen={() => setDrawerOpen(true)}
       />
 
-      {/* Results sections */}
+      {/* Results sections — fade in when data arrives */}
       {result && !loading && (
-        <>
+        <div className="results-enter">
           <ThePlan result={result} circuitPath={circuitPath} />
           <WhatItBuysYou result={result} />
           <TheRoadNotTaken result={result} />
-        </>
+        </div>
       )}
 
       {/* Initial call-to-action when no result yet */}
@@ -228,45 +320,8 @@ export default function Page() {
         </section>
       )}
 
-      {/* Loading skeleton */}
-      {loading && (
-        <section
-          className="py-24 px-6 flex flex-col items-center gap-6"
-          style={{ background: "var(--bg-raised)", minHeight: "40vh" }}
-          aria-live="polite"
-          aria-busy="true"
-        >
-          <span className="kicker text-xl">working</span>
-          <p
-            className="font-display font-600 text-2xl"
-            style={{ color: "var(--ink)" }}
-          >
-            {loadingMsg.toUpperCase()}
-          </p>
-          <div className="flex gap-2 mt-2" aria-hidden>
-            {[0, 1, 2, 3, 4].map(i => (
-              <div
-                key={i}
-                className="h-px w-12"
-                style={{
-                  background: "var(--accent)",
-                  opacity: 0,
-                  animation: `fade-bar 1.2s ease-in-out ${i * 0.15}s infinite`,
-                }}
-              />
-            ))}
-          </div>
-          <style>{`
-            @keyframes fade-bar {
-              0%, 100% { opacity: 0.1; transform: scaleY(1); }
-              50% { opacity: 1; transform: scaleY(3); }
-            }
-          `}</style>
-          <p className="font-body text-sm" style={{ color: "var(--muted)" }}>
-            Running Monte Carlo over all compound sequences
-          </p>
-        </section>
-      )}
+      {/* Skeleton — visible while loading */}
+      {loading && <ResultsSkeleton phase={loadingPhase} />}
 
       <SiteFooter modelCard={modelCard} />
     </div>
