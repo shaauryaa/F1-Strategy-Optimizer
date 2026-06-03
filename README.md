@@ -159,8 +159,17 @@ f1opt/
     conditions.py        correct safety-car physics (laps slower, pit loss cheaper)
     simulator.py         deterministic + Monte-Carlo race simulation
     optimizer.py         FIA-legal search + MC re-rank + undercut/overcut
-app.py                   Streamlit UI
+api.py                   FastAPI backend — exposes /optimise, /health endpoints
+app.py                   Streamlit UI (legacy; Next.js frontend is now primary)
 tests/test_engine.py     locks in the fixes
+
+web/                     Next.js frontend
+  src/components/
+    Hero.tsx               recommended strategy, MC time band, stint visualisation
+    TheRoadNotTaken.tsx    ranked alternatives + side-by-side strategy comparison
+    WhatItBuysYou.tsx      cumulative time saved vs naive baseline
+    ThePlan.tsx            model card (CV MAE, R², data provenance)
+    ConfigDrawer.tsx       race/circuit configuration panel
 
 data/raw/                your existing Ergast CSVs (inputs)
 data/pace_dataset.parquet  generated dataset (gitignored)

@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: f1-strategy-optimizer
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python -m f1opt.data.build_dataset && python -m f1opt.model.pace_model && python -m f1opt.model.tyre_model
+    startCommand: uvicorn api:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
