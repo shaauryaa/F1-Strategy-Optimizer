@@ -68,7 +68,7 @@ function StatCard({
           letterSpacing: "-0.02em",
         }}
       >
-        {val >= 1 ? val.toFixed(1) : "0.0"}
+        {val.toFixed(1)}
         <span
           className="font-body font-400 ml-1"
           style={{
@@ -105,7 +105,7 @@ export default function WhatItBuysYou({ result }: Props) {
       entries => {
         if (entries[0].isIntersecting) { setVisible(true); obs.disconnect(); }
       },
-      { threshold: 0.25 }
+      { threshold: 0.1 }
     );
     obs.observe(ref.current);
     return () => obs.disconnect();
