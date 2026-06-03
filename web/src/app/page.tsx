@@ -39,6 +39,7 @@ export default function Page() {
   });
   const [result, setResult] = useState<OptimiseResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState("Optimising");
   const [error, setError] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -70,18 +71,22 @@ export default function Page() {
 
   const runOptimise = useCallback(async () => {
     setLoading(true);
+    setLoadingMsg("Optimising");
     setError(null);
     try {
-      const res = await postOptimise({
-        circuit: selectedSlug,
-        year: FIXED_YEAR,
-        laps: config.laps,
-        temp: config.temp,
-        start_compound: null,
-        max_stops: config.maxStops,
-        sc_lap: config.scLap,
-        vsc_lap: config.vscLap,
-      });
+      const res = await postOptimise(
+        {
+          circuit: selectedSlug,
+          year: FIXED_YEAR,
+          laps: config.laps,
+          temp: config.temp,
+          start_compound: null,
+          max_stops: config.maxStops,
+          sc_lap: config.scLap,
+          vsc_lap: config.vscLap,
+        },
+        () => setLoadingMsg("Waking the engine — up to a minute on the free tier"),
+      );
       setResult(res);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Optimisation failed");
@@ -236,7 +241,7 @@ export default function Page() {
             className="font-display font-600 text-2xl"
             style={{ color: "var(--ink)" }}
           >
-            OPTIMISING
+            {loadingMsg.toUpperCase()}
           </p>
           <div className="flex gap-2 mt-2" aria-hidden>
             {[0, 1, 2, 3, 4].map(i => (

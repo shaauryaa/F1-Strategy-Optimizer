@@ -11,8 +11,9 @@ import json
 from functools import lru_cache
 
 import numpy as np
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from f1opt.paths import CIRCUITS, MODEL_CARD
@@ -23,6 +24,15 @@ from f1opt.strategy.optimizer import optimise
 app = FastAPI(title="F1 Strategy Optimizer API", version="2.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"],
                    allow_headers=["*"])
+
+
+@app.exception_handler(Exception)
+async def unhandled(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"error": type(exc).__name__, "detail": str(exc)},
+        headers={"Access-Control-Allow-Origin": "*"},
+    )
 
 
 @lru_cache(maxsize=1)
