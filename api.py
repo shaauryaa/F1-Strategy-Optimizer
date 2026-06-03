@@ -51,6 +51,16 @@ def health():
     return {"status": "ok", "circuits": len(circuits())}
 
 
+@app.get("/debug-model")
+def debug_model():
+    import traceback
+    try:
+        ltm = engine()
+        return {"status": "ok", "model": str(type(ltm.pace))}
+    except Exception as e:
+        return {"status": "error", "error": str(e), "trace": traceback.format_exc()}
+
+
 @app.get("/circuits")
 def list_circuits():
     return [{"slug": k, **v} for k, v in circuits().items()]
