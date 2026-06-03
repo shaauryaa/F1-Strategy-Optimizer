@@ -49,13 +49,27 @@ def evaluate(df: pd.DataFrame) -> dict:
     race it hasn't seen."""
     X, y = make_X(df), df[TARGET].values
     groups = (df["circuitRef"].astype(str) + "_" + df["year"].astype(str)).values
+
+    # Drop race weekends too small to form a reliable CV fold; Render's dataset
+    # can have sparse groups that cause "window shape larger than input" errors.
+    MIN_GROUP = 50
+    counts = pd.Series(groups).value_counts()
+    valid = counts[counts >= MIN_GROUP].index
+    mask = pd.Series(groups).isin(valid).values
+    X, y, groups = X.iloc[mask].reset_index(drop=True), y[mask], groups[mask]
+
     gkf = GroupKFold(n_splits=5)
     maes, r2s = [], []
     for tr, te in gkf.split(X, y, groups):
-        pipe = _pipeline().fit(X.iloc[tr], y[tr])
-        pred = pipe.predict(X.iloc[te])
-        maes.append(mean_absolute_error(y[te], pred))
-        r2s.append(r2_score(y[te], pred))
+        try:
+            pipe = _pipeline().fit(X.iloc[tr], y[tr])
+            pred = pipe.predict(X.iloc[te])
+            maes.append(mean_absolute_error(y[te], pred))
+            r2s.append(r2_score(y[te], pred))
+        except Exception as exc:
+            print(f"  Skipping CV fold: {exc}")
+    if not maes:
+        return {"cv_mae_s": float("nan"), "cv_mae_std": float("nan"), "cv_r2": float("nan")}
     return {"cv_mae_s": float(np.mean(maes)), "cv_mae_std": float(np.std(maes)),
             "cv_r2": float(np.mean(r2s))}
 
