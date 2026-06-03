@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Canvas */
+  --bg:       #060608;
+  --bg-raised: #0B0B0F;
+  --bg-card:  #111116;
+
+  /* Ink */
+  --ink:      #F6F6F8;
+  --muted:    #85858F;
+  --faint:    #4A4A54;
+  --hairline: #1E1E26;
+
+  /* Accents */
+  --accent:   #FF1801;      /* F1 red — brand only */
+  --accent2:  #C4FF00;      /* Kaushan script color */
+
+  /* Tyre data (ONLY for compound dots/blocks) */
+  --soft:     #FF3B30;
+  --medium:   #FFC93C;
+  --hard:     #ECECEF;
+
+  /* Type */
+  --font-display: 'Clash Display', 'Georgia', serif;
+  --font-body:    'Satoshi', 'Inter', system-ui, sans-serif;
+  --font-script:  'Kaushan Script', cursive;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* Film grain overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 180px;
+  opacity: 0.028;
+  mix-blend-mode: overlay;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--faint); border-radius: 2px; }
+
+/* Focus */
+:focus-visible { outline: 1px solid var(--accent2); outline-offset: 3px; }
+:focus:not(:focus-visible) { outline: none; }
+
+/* Type utilities */
+.font-display  { font-family: var(--font-display); }
+.font-body     { font-family: var(--font-body); }
+.font-script   { font-family: var(--font-script); color: var(--accent2); }
+
+/* Section kicker label */
+.kicker {
+  font-family: var(--font-script);
+  color: var(--accent2);
+  font-size: 1.1rem;
+  line-height: 1;
+  display: block;
+  margin-bottom: 0.35em;
+}
+
+/* Eyebrow — small uppercase Satoshi */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Stroke draw animation for SVG paths */
+@keyframes stroke-draw {
+  from { stroke-dashoffset: var(--path-len, 5000); }
+  to   { stroke-dashoffset: 0; }
+}
+
+.draw-path {
+  stroke-dasharray: var(--path-len, 5000);
+  stroke-dashoffset: var(--path-len, 5000);
+}
+.draw-path.animate {
+  animation: stroke-draw 1.6s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+/* Pace line draw */
+@keyframes pace-draw {
+  from { stroke-dashoffset: var(--pace-len, 3000); }
+  to   { stroke-dashoffset: 0; }
+}
+
+.pace-line {
+  stroke-dasharray: var(--pace-len, 3000);
+  stroke-dashoffset: var(--pace-len, 3000);
+  animation: pace-draw 2.2s cubic-bezier(.16,1,.3,1) 0.3s forwards;
+}
+
+/* Stint block entrance */
+@keyframes grow-in {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+.stint-block {
+  transform-origin: left;
+  transform: scaleX(0);
+}
+.stint-block.animate {
+  animation: grow-in 0.7s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+/* Count-up numbers */
+.count-up { font-variant-numeric: tabular-nums; }
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .draw-path, .pace-line, .stint-block { animation: none !important; }
+  .draw-path { stroke-dashoffset: 0 !important; }
+  .pace-line { stroke-dashoffset: 0 !important; }
+  .stint-block { transform: scaleX(1) !important; }
+  html { scroll-behavior: auto; }
+}

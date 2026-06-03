@@ -1,0 +1,162 @@
+{
+  "albert_park": {
+    "name": "Albert Park",
+    "typical_laps": 57,
+    "median_pace": 89.6
+  },
+  "americas": {
+    "name": "Americas",
+    "typical_laps": 56,
+    "median_pace": 102.6
+  },
+  "bahrain": {
+    "name": "Bahrain",
+    "typical_laps": 57,
+    "median_pace": 97.8
+  },
+  "baku": {
+    "name": "Baku",
+    "typical_laps": 51,
+    "median_pace": 108.5
+  },
+  "catalunya": {
+    "name": "Catalunya",
+    "typical_laps": 65,
+    "median_pace": 85.7
+  },
+  "hockenheimring": {
+    "name": "Hockenheimring",
+    "typical_laps": 66,
+    "median_pace": 82.3
+  },
+  "hungaroring": {
+    "name": "Hungaroring",
+    "typical_laps": 69,
+    "median_pace": 84.7
+  },
+  "imola": {
+    "name": "Imola",
+    "typical_laps": 63,
+    "median_pace": 81.4
+  },
+  "interlagos": {
+    "name": "Interlagos",
+    "typical_laps": 71,
+    "median_pace": 76.1
+  },
+  "istanbul": {
+    "name": "Istanbul",
+    "typical_laps": 58,
+    "median_pace": 97.1
+  },
+  "jeddah": {
+    "name": "Jeddah",
+    "typical_laps": 50,
+    "median_pace": 94.8
+  },
+  "losail": {
+    "name": "Losail",
+    "typical_laps": 57,
+    "median_pace": 88.1
+  },
+  "marina_bay": {
+    "name": "Marina Bay",
+    "typical_laps": 61,
+    "median_pace": 110.0
+  },
+  "miami": {
+    "name": "Miami",
+    "typical_laps": 57,
+    "median_pace": 93.4
+  },
+  "monaco": {
+    "name": "Monaco",
+    "typical_laps": 77,
+    "median_pace": 79.3
+  },
+  "monza": {
+    "name": "Monza",
+    "typical_laps": 53,
+    "median_pace": 86.9
+  },
+  "mugello": {
+    "name": "Mugello",
+    "typical_laps": 59,
+    "median_pace": 83.7
+  },
+  "nurburgring": {
+    "name": "Nurburgring",
+    "typical_laps": 60,
+    "median_pace": 92.9
+  },
+  "portimao": {
+    "name": "Portimao",
+    "typical_laps": 65,
+    "median_pace": 82.9
+  },
+  "red_bull_ring": {
+    "name": "Red Bull Ring",
+    "typical_laps": 70,
+    "median_pace": 70.7
+  },
+  "ricard": {
+    "name": "Ricard",
+    "typical_laps": 53,
+    "median_pace": 98.9
+  },
+  "rodriguez": {
+    "name": "Rodriguez",
+    "typical_laps": 70,
+    "median_pace": 83.4
+  },
+  "sepang": {
+    "name": "Sepang",
+    "typical_laps": 55,
+    "median_pace": 103.3
+  },
+  "shanghai": {
+    "name": "Shanghai",
+    "typical_laps": 56,
+    "median_pace": 102.2
+  },
+  "silverstone": {
+    "name": "Silverstone",
+    "typical_laps": 52,
+    "median_pace": 93.7
+  },
+  "sochi": {
+    "name": "Sochi",
+    "typical_laps": 53,
+    "median_pace": 102.0
+  },
+  "spa": {
+    "name": "Spa",
+    "typical_laps": 44,
+    "median_pace": 112.6
+  },
+  "suzuka": {
+    "name": "Suzuka",
+    "typical_laps": 52,
+    "median_pace": 98.4
+  },
+  "vegas": {
+    "name": "Vegas",
+    "typical_laps": 50,
+    "median_pace": 98.6
+  },
+  "villeneuve": {
+    "name": "Villeneuve",
+    "typical_laps": 69,
+    "median_pace": 78.6
+  },
+  "yas_marina": {
+    "name": "Yas Marina",
+    "typical_laps": 55,
+    "median_pace": 103.5
+  },
+  "zandvoort": {
+    "name": "Zandvoort",
+    "typical_laps": 72,
+    "median_pace": 76.6
+  }
+}

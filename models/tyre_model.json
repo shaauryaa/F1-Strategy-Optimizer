@@ -1,0 +1,25 @@
+{
+  "params": {
+    "SOFT": {
+      "offset": -0.6,
+      "wear": 0.1,
+      "cliff_age": 18,
+      "cliff_wear": 0.3
+    },
+    "MEDIUM": {
+      "offset": 0.0,
+      "wear": 0.06,
+      "cliff_age": 28,
+      "cliff_wear": 0.18
+    },
+    "HARD": {
+      "offset": 0.55,
+      "wear": 0.035,
+      "cliff_age": 40,
+      "cliff_wear": 0.1
+    }
+  },
+  "ref_temp": 30.0,
+  "temp_sensitivity": 0.04,
+  "source": "physical_prior (no real compound data found)"
+}
