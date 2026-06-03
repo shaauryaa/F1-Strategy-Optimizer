@@ -30,6 +30,19 @@ from ..paths import PACE_MODEL, DATASET, MODEL_CARD
 ARTIFACT = PACE_MODEL
 
 
+def _ensure_hgbr_compatible(X: pd.DataFrame) -> pd.DataFrame:
+    """sklearn ≥1.9 _find_binning_thresholds uses sliding_window_view(distinct, 2)
+    and requires ≥2 distinct non-NaN values per numeric feature.  track_temp is
+    entirely NaN on Ergast data, so pin two synthetic sentinel rows so the
+    feature can be binned.  With 200 k+ training rows the effect is negligible."""
+    X = X.copy()
+    for col in X.select_dtypes(include="number").columns:
+        if X[col].dropna().nunique() < 2:
+            X.iloc[0, X.columns.get_loc(col)] = 0.0
+            X.iloc[1, X.columns.get_loc(col)] = 1.0
+    return X
+
+
 def _pipeline() -> Pipeline:
     pre = ColumnTransformer(
         [("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=False), BASE_CATEGORICAL)],
@@ -62,7 +75,7 @@ def evaluate(df: pd.DataFrame) -> dict:
     maes, r2s = [], []
     for tr, te in gkf.split(X, y, groups):
         try:
-            pipe = _pipeline().fit(X.iloc[tr], y[tr])
+            pipe = _pipeline().fit(_ensure_hgbr_compatible(X.iloc[tr].reset_index(drop=True)), y[tr])
             pred = pipe.predict(X.iloc[te])
             maes.append(mean_absolute_error(y[te], pred))
             r2s.append(r2_score(y[te], pred))
@@ -87,7 +100,7 @@ def fuel_coef(df: pd.DataFrame) -> float:
 
 def train(df: pd.DataFrame, save: bool = True) -> Pipeline:
     X, y = make_X(df), df[TARGET].values
-    pipe = _pipeline().fit(X, y)
+    pipe = _pipeline().fit(_ensure_hgbr_compatible(X), y)
     if save:
         joblib.dump(pipe, ARTIFACT)
     return pipe
