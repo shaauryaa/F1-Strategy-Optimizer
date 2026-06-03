@@ -99,11 +99,12 @@ export default function Hero({
               className="appearance-none pr-7 pl-3 py-1.5 text-sm font-body rounded-none focus:outline-none cursor-pointer"
               style={{
                 background: "var(--bg-raised)",
-                border: "1px solid var(--hairline)",
-                color: "var(--ink)",
+                border: `1px solid ${selectedSlug ? "var(--hairline)" : "var(--accent2)"}`,
+                color: selectedSlug ? "var(--ink)" : "var(--accent2)",
                 fontFamily: "var(--font-body)",
               }}
             >
+              <option value="" disabled>Select a circuit</option>
               {circuits.map(c => (
                 <option key={c.slug} value={c.slug}>
                   {c.name}
@@ -144,20 +145,21 @@ export default function Hero({
 
       {/* Hero content */}
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 text-center py-16">
-        {/* Eyebrow */}
-        <span className="eyebrow mb-3">
-          {circuit?.name ?? "Circuit"}
-        </span>
+        {/* Eyebrow — only when a circuit is chosen */}
+        {circuit && (
+          <span className="eyebrow mb-3">{circuit.name}</span>
+        )}
 
         {/* Circuit name — Clash Display */}
         <h1
-          className="font-display font-700 leading-none tracking-tight mb-2"
+          className="font-display leading-none tracking-tight mb-2"
           style={{
-            fontSize: "clamp(3rem, 8vw, 7rem)",
-            color: "var(--ink)",
+            fontSize: circuit ? "clamp(3rem, 8vw, 7rem)" : "clamp(2rem, 5vw, 4rem)",
+            color: circuit ? "var(--ink)" : "var(--faint)",
+            fontWeight: 700,
           }}
         >
-          {circuit?.name.toUpperCase() ?? "SELECT A CIRCUIT"}
+          {circuit ? circuit.name.toUpperCase() : "SELECT A CIRCUIT"}
         </h1>
 
         {/* Grand Prix name — Kaushan script, accent2 */}
@@ -165,7 +167,7 @@ export default function Hero({
           className="font-script mb-8"
           style={{ fontSize: "clamp(1.4rem, 3vw, 2.2rem)" }}
         >
-          {gpName || " "}
+          {circuit ? (gpName || " ") : ""}
         </p>
 
         {/* Readout row */}

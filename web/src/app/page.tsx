@@ -29,7 +29,7 @@ export default function Page() {
   const [circuits, setCircuits] = useState<Circuit[]>([]);
   const [geoData, setGeoData] = useState<Record<string, CircuitGeo>>({});
   const [modelCard, setModelCard] = useState<ModelCard | null>(null);
-  const [selectedSlug, setSelectedSlug] = useState("silverstone");
+  const [selectedSlug, setSelectedSlug] = useState("");
   const [config, setConfig] = useState<Config>({
     laps: 52,
     temp: 35,
@@ -46,14 +46,6 @@ export default function Page() {
   useEffect(() => {
     fetchCircuits().then(cs => {
       setCircuits(cs);
-      const silver = cs.find(c => c.slug === "silverstone");
-      if (silver) {
-        setSelectedSlug(silver.slug);
-        setConfig(prev => ({ ...prev, laps: silver.typical_laps }));
-      } else if (cs.length > 0) {
-        setSelectedSlug(cs[0].slug);
-        setConfig(prev => ({ ...prev, laps: cs[0].typical_laps }));
-      }
     }).catch(() => {});
 
     fetchModelCard().then(setModelCard).catch(() => {});

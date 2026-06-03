@@ -253,7 +253,7 @@ export default function ConfigDrawer({
         >
           <button
             onClick={() => { onSubmit(); onClose(); }}
-            disabled={loading}
+            disabled={loading || !circuit}
             className="w-full py-4 font-display font-600 tracking-widest text-sm uppercase transition-opacity hover:opacity-85 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent2 disabled:opacity-40"
             style={{
               background: "var(--accent)",
