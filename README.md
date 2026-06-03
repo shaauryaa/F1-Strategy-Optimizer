@@ -167,6 +167,18 @@ data/pace_dataset.parquet  generated dataset (gitignored)
 models/                  trained artifacts: pace_model.pkl, tyre_model.json, +json
 ```
 
+## Web UI
+
+The Next.js frontend (`web/`) presents the optimizer output across several sections:
+
+- **Hero** — recommended strategy with Monte-Carlo time band and stint visualisation.
+- **What It Buys You** — cumulative time comparison vs a naive baseline.
+- **The Road Not Taken** — ranked alternative strategies with three interactive features:
+  - **Compare toggle** on each row: select any two strategies to open a side-by-side panel showing compound sequence, per-stint breakdown (compound, start lap, end lap, lap count), total time, stop count, and delta vs optimal. Selecting a third strategy automatically drops the oldest.
+  - **Undercut check** — per-stop undercut/overcut delta coloured green (saves time) or red (costs time); neutral grey for a zero delta.
+  - The recommended strategy is labelled *chosen* in the ranked list and *Recommended* in the comparison panel.
+- **Model card** — CV MAE, R², training data provenance.
+
 ## What's intentionally *not* modelled
 
 - **Track position / traffic.** This is a single-car pace model, so "undercut"
